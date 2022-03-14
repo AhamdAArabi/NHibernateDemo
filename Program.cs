@@ -36,18 +36,18 @@ namespace NHibernateDemoApp
             //    x.LogSqlInConsole = true;
             //    x.BatchSize = 30;
             //});
-            cfg.DataBaseIntegration(x =>
-            {
-                x.ConnectionString = "Data Source=DESKTOP-69PPK9T;Initial Catalog=NHibernateDemoDB;Integrated Security=True";
+            //cfg.DataBaseIntegration(x =>
+            //{
+            //    x.ConnectionString = "Data Source=DESKTOP-69PPK9T;Initial Catalog=NHibernateDemoDB;Integrated Security=True";
 
 
-                x.Driver<SqlClientDriver>();
-                x.Dialect<MsSql2008Dialect>();
-                x.LogSqlInConsole = true;
-            });
+            //    x.Driver<SqlClientDriver>();
+            //    x.Dialect<MsSql2008Dialect>();
+            //    x.LogSqlInConsole = true;
+            //});
 
-            cfg.AddAssembly(Assembly.GetExecutingAssembly());
-
+            //cfg.AddAssembly(Assembly.GetExecutingAssembly());
+            cfg.Configure();
             var sefact = cfg.BuildSessionFactory();
 
             // Add Students Record
@@ -57,24 +57,24 @@ namespace NHibernateDemoApp
                 using (var tx = session.BeginTransaction())
                 {
 
-                    var student1 = new Student
-                    {
-                        ID = 1,
-                        FirstName = "Allan",
-                        LastName = "Bommer",
-                        AcademicStanding = StudentAcademicStanding.Excellent
-                    };
+                    //var student1 = new Student
+                    //{
+                    //    ID = 1,
+                    //    FirstName = "Allan",
+                    //    LastName = "Bommer",
+                    //    AcademicStanding = StudentAcademicStanding.Excellent
+                    //};
 
-                    var student2 = new Student
-                    {
-                        ID = 2,
-                        FirstName = "Jerry",
-                        LastName = "Lewis",
-                        AcademicStanding = StudentAcademicStanding.Good
-                    };
+                    //var student2 = new Student
+                    //{
+                    //    ID = 2,
+                    //    FirstName = "Jerry",
+                    //    LastName = "Lewis",
+                    //    AcademicStanding = StudentAcademicStanding.Good
+                    //};
 
-                    session.Save(student1);
-                    session.Save(student2);
+                    //session.Save(student1);
+                    //session.Save(student2);
                     var students = session.CreateCriteria<Student>().List<Student>();
                     Console.WriteLine("\nFetch the complete list again\n");
 

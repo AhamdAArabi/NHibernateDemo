@@ -5,7 +5,7 @@
 
   <class name = "Student">
     <id name = "ID">
-      <generator class = "native"/>
+      <generator class = "guid.comb"/>
     </id>
 
     <property name = "LastName"/>

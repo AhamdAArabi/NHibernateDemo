@@ -1,4 +1,5 @@
 using HibernatingRhinos.Profiler.Appender.NHibernate;
+using NHibernate.Cache;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
@@ -28,63 +29,36 @@ namespace NHibernateDemoApp
             String TrustServerCertificate = "False";
             String ApplicationIntent = "ReadWrite";
             String MultiSubnetFailover = "False";
-            //cfg.DataBaseIntegration(x => {
-            //    x.ConnectionString = "Data Source=DESKTOP-69PPK9T;Initial Catalog=NHibernateDemoDB;Integrated Security=True";
+            cfg.DataBaseIntegration(x =>
+            {
+                x.ConnectionString = "Data Source=DESKTOP-69PPK9T;Initial Catalog=NHibernateDemoDB;Integrated Security=True";
 
-            //    x.Driver<SqlClientDriver>();
-            //    x.Dialect<MsSql2008Dialect>();
-            //    x.LogSqlInConsole = true;
-            //    x.BatchSize = 30;
-            //});
-            //cfg.DataBaseIntegration(x =>
-            //{
-            //    x.ConnectionString = "Data Source=DESKTOP-69PPK9T;Initial Catalog=NHibernateDemoDB;Integrated Security=True";
+                x.Driver<SqlClientDriver>();
+                x.Dialect<MsSql2008Dialect>();
+                x.LogSqlInConsole = true;
+                x.BatchSize = 10;
+            });
+
+            cfg.Cache(c => {
+                c.UseMinimalPuts = true;
+                c.UseQueryCache = true;
+            });
 
 
-            //    x.Driver<SqlClientDriver>();
-            //    x.Dialect<MsSql2008Dialect>();
-            //    x.LogSqlInConsole = true;
-            //});
-
-            //cfg.AddAssembly(Assembly.GetExecutingAssembly());
-            cfg.Configure();
+            cfg.SessionFactory().Caching.Through<HashtableCacheProvider>()
+               .WithDefaultExpiration(1440);
+            cfg.AddAssembly(Assembly.GetExecutingAssembly());
             var sefact = cfg.BuildSessionFactory();
 
-            // Add Students Record
-
+            var tempID = new Guid("001fb306-9967-4966-83ed-ae5e014a7e6c");
+            var tempID2 = new Guid("C9F56A6D-8BEC-45C5-89AF-AE5E014A7E76");
             using (var session = sefact.OpenSession())
             {
+
                 using (var tx = session.BeginTransaction())
                 {
-
-                    //var student1 = new Student
-                    //{
-                    //    ID = 1,
-                    //    FirstName = "Allan",
-                    //    LastName = "Bommer",
-                    //    AcademicStanding = StudentAcademicStanding.Excellent
-                    //};
-
-                    //var student2 = new Student
-                    //{
-                    //    ID = 2,
-                    //    FirstName = "Jerry",
-                    //    LastName = "Lewis",
-                    //    AcademicStanding = StudentAcademicStanding.Good
-                    //};
-
-                    //session.Save(student1);
-                    //session.Save(student2);
-                    var students = session.CreateCriteria<Student>().List<Student>();
-                    Console.WriteLine("\nFetch the complete list again\n");
-
-                    foreach (var student in students)
-                    {
-                        Console.WriteLine("{0} \t{1} \t{2} \t{3}", student.ID,
-                           student.FirstName, student.LastName, student.AcademicStanding);
-                    }
-
-                    tx.Commit();
+                    var studentUsingTheFirstQuery = session.Get<Student>(tempID);
+                    var studentUsingTheSecondQuery = session.Get<Student>(tempID2);
                 }
 
                 Console.ReadLine();

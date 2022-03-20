@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NHibernateDemoApp
 {
     class Student { 
-      public virtual int ID { get; set; } 
+      public virtual Guid ID { get; set; } 
       public virtual string LastName { get; set; } 
       public virtual string FirstName { get; set; } 
       public virtual StudentAcademicStanding AcademicStanding { get; set; } 

@@ -8,12 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Customer.hbm.xml" />
     <None Remove="hibernate.cfg.xml" />
+    <None Remove="Order.hbm.xml" />
     <None Remove="Student.hbm.xml" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Customer.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="hibernate.cfg.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Order.hbm.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Student.hbm.xml">
@@ -22,8 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="NHibernate" Version="5.3.11" />
     <PackageReference Include="NHibernateProfiler" Version="6.0.6031" />
+    <PackageReference Include="Spring.Core" Version="3.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
   </ItemGroup>
 

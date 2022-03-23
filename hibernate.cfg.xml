@@ -3,7 +3,7 @@
   <session-factory>
 
     <property name = "connection.connection_string">
-      Data Source=DESKTOP-69PPK9T;
+      Data Source=DESKTOP-LAACQV2;
       Initial Catalog = NHibernateDemoDB;
       Integrated Security = True;
       Connect Timeout = 15;

@@ -5,6 +5,7 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 
 using System;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 
@@ -21,50 +22,94 @@ namespace NHibernateDemoApp
             NHibernateProfiler.Initialize();
             var cfg = new Configuration();
 
-            String DataSource = "DESKTOP-69PPK9T";
-            String InitialCatalog = "NHibernateDemoDB";
-            String IntegratedSecurity = "True";
-            String ConnectTimeout = "15";
-            String Encrypt = "False";
-            String TrustServerCertificate = "False";
-            String ApplicationIntent = "ReadWrite";
-            String MultiSubnetFailover = "False";
+          
             cfg.DataBaseIntegration(x =>
             {
-                x.ConnectionString = "Data Source=DESKTOP-69PPK9T;Initial Catalog=NHibernateDemoDB;Integrated Security=True";
+                x.ConnectionString = @"Data Source=DESKTOP-LAACQV2\SQLEXPRESS01;Initial Catalog=NHibernateDemo;Integrated Security=True";
 
                 x.Driver<SqlClientDriver>();
                 x.Dialect<MsSql2008Dialect>();
                 x.LogSqlInConsole = true;
-                x.BatchSize = 10;
+                x.IsolationLevel = IsolationLevel.RepeatableRead;
+                x.Timeout = 10; x.BatchSize = 10;
+
             });
-
-            cfg.Cache(c => {
-                c.UseMinimalPuts = true;
-                c.UseQueryCache = true;
-            });
-
-
-            cfg.SessionFactory().Caching.Through<HashtableCacheProvider>()
-               .WithDefaultExpiration(1440);
+            cfg.SessionFactory();
             cfg.AddAssembly(Assembly.GetExecutingAssembly());
-            var sefact = cfg.BuildSessionFactory();
+            var sessionFactory = cfg.BuildSessionFactory();
 
-            var tempID = new Guid("001fb306-9967-4966-83ed-ae5e014a7e6c");
-            var tempID2 = new Guid("C9F56A6D-8BEC-45C5-89AF-AE5E014A7E76");
-            using (var session = sefact.OpenSession())
+            Guid id;
+            using (var session = sessionFactory.OpenSession())
+
+            using (var tx = session.BeginTransaction())
             {
-
-                using (var tx = session.BeginTransaction())
-                {
-                    var studentUsingTheFirstQuery = session.Get<Student>(tempID);
-                    var studentUsingTheSecondQuery = session.Get<Student>(tempID2);
-                }
-
-                Console.ReadLine();
+                var newCustomer = CreateCustomer();
+                Console.WriteLine("New Customer:");
+                Console.WriteLine(newCustomer);
+                session.Save(newCustomer);
+                id = newCustomer.Id;
+                tx.Commit();
             }
 
+            using (var session = sessionFactory.OpenSession())
+
+            using (var tx = session.BeginTransaction())
+            {
+                var reloaded = session.Load<Customer>(id);
+                Console.WriteLine("Reloaded:");
+                Console.WriteLine(reloaded);
+                tx.Commit();
+            }
+
+            Console.WriteLine("Press <ENTER> to exit...");
+            Console.ReadLine();
         }
+
+        private static Customer CreateCustomer()
+        {
+
+            var customer = new Customer
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Points = 100,
+                HasGoldStatus = true,
+                MemberSince = new DateTime(2012, 1, 1),
+                CreditRating = CustomerCreditRating.Good,
+                AverageRating = 42.42424242,
+                Address = CreateLocation()
+            };
+
+            var order1 = new Order
+            {
+                Ordered = DateTime.Now
+            };
+
+            customer.AddOrder(order1);
+
+            var order2 = new Order
+            {
+                Ordered = DateTime.Now.AddDays(-1),
+                Shipped = DateTime.Now,
+                ShipTo = CreateLocation()
+            };
+
+            customer.AddOrder(order2);
+            return customer;
+        }
+
+        private static Location CreateLocation()
+        {
+
+            return new Location
+            {
+                Street = "123 Somewhere Avenue",
+                City = "Nowhere",
+                Province = "Alberta",
+                Country = "Canada"
+            };
+        }
+
     }
 }
 
